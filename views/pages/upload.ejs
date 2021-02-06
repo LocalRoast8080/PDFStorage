@@ -1,0 +1,20 @@
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Book Upload</title>
+        <%- include ('../partials/head'); %> 
+    </head>
+    <header>
+        <%-include ('../partials/header'); %> 
+    </header>
+    <body class="container">
+        <div class="jumbotron">
+              <form action="/upload" method="post" enctype="multipart/form-data">
+                <input type="file" name="pdf" />
+                <input type="submit">
+              </form>     
+                     
+        </div>
+    </body>
+</html>

@@ -1,0 +1,28 @@
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <%- include('../partials/head'); %>
+  </head>
+  <header><%- include('../partials/header') %></header>
+  <body class="container">
+      
+    <div class="jumbotron">
+        <h1 class="display-3">EJS Variable examples</h1>
+        <p class="lead">
+            <%= Bio %> 
+        </p>
+        <hr class="my-2">
+        <% People.forEach(person => { %>
+         <li style="list-style-type: none;">
+            My Name is <strong><%= person.firstName %></strong>, last name <strong><%= person.lastName %></strong> and I am <strong><%= person.age %></strong> years old
+         </li>
+        <% }) %>
+        <small>To create this I "referenced" <a href="https://www.digitalocean.com/community/tutorials/how-to-use-ejs-to-template-your-node-application">Here</a>.</small>
+    </div>
+  </div>
+
+  </body>
+</html>
+
