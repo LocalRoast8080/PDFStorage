@@ -1,6 +1,7 @@
 const express = require("express");
 const multer = require("multer");
 const path = require('path')
+const fs = require('fs')
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -45,8 +46,20 @@ let routes = (app) => {
   });
   router.post("/upload", upload.single("pdf"), function (req, res) {
     console.log(req.file);
+
+    // complete this function
+    function savePathToDB(){
+      //get uid from end with regex
+      //save og name as field 
+      //save uid as field
+      //once other db is set up
+    }
     res.redirect("/upload");
   });
+  router.get('/allBooks', function(req,res){
+
+    res.render('pages/allBooks')
+  })
 
   app.use(router);
 };
