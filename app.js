@@ -1,25 +1,28 @@
 const express = require("express");
 const path = require('path');
 const fs = require('fs');
+const bodyParser = require('body-parser')
+require('dotenv').config()
 
+const db = require('./db/index')
 const utilities = require('./utilities')
 
 const app = express();
-//app.set('views',path.join(__dirname,'views'));
 app.set('view engine','ejs')
 
-console.log(utilities.numberI())
-
-// global.__basedir = __dirname;
-
 const initRoutes = require("./routes/index.js");
-
+const { parse } = require("path");
 initRoutes(app);
 
-//reads files from folder
-// fs.readdir('./uploads',function(err,files){
-//     console.log(files)
-// })
+app.use(bodyParser.json());
+
+// db.testCon()
+// const word = 'Barbara Bregstein - Complete Spanish Step-By-Step - The Fastest Way to Achieve Spanish Mastery-McGraw-Hill Education (2016)-1612655125161-594847145.pdf'
+// const regex= /([0-9]{9}[.])/
+// const fileId = word.match(regex)
+// let result = path.parse(fileId[0])
+// console.log(result.name)
+
 
 
 let port = 8080;

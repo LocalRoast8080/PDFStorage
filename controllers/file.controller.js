@@ -1,7 +1,6 @@
 
 
 const test= function (req, res) {
-    res.send('hello world')}
-
-
-module.exports = test
+console.log('test')
+}
+module.exports = {test}

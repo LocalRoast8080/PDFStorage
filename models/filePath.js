@@ -1,5 +1,13 @@
-const { Sequelize } = require('sequelize');
+// module.exports = (sequelize, Sequelize) => {
+//   const FilePath = sequelize.define("file-path", {
+//     file_id: {
+//       type: Sequelize.INT
+//     },
+//     file_path: {
+//       type: Sequelize.STRING
+//     },
 
-const sequelize = new Sequelize('database', 'username', null, {
-    dialect: 'mysql'
-  })
+//   });
+
+//   return FilePath;
+// };

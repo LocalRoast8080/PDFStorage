@@ -1,7 +1,9 @@
 const express = require("express");
 const multer = require("multer");
-const path = require('path')
-const fs = require('fs')
+const path = require("path");
+const fs = require("fs");
+require('dotenv').config()
+const db = require("../db/index");
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -9,7 +11,7 @@ const storage = multer.diskStorage({
   },
   filename: function (req, file, cb) {
     const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-    let ogName = path.parse(file.originalname)
+    let ogName = path.parse(file.originalname);
     cb(null, ogName.name + "-" + uniqueSuffix + `.${file.fieldname}`);
   },
 });
@@ -17,9 +19,6 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 const router = express.Router();
-
-//example for how to export out functions for later
-// const controller = require("../controllers/file.controller");
 
 let routes = (app) => {
   router.get("/", function (req, res) {
@@ -45,21 +44,43 @@ let routes = (app) => {
     res.render("pages/varExample", { People: people, Bio: pageMeaning });
   });
   router.post("/upload", upload.single("pdf"), function (req, res) {
-    console.log(req.file);
 
-    // complete this function
-    function savePathToDB(){
-      //get uid from end with regex
-      //save og name as field 
-      //save uid as field
-      //once other db is set up
+    function savePathToDB(fileObj) {
+      const fileName = fileObj.filename
+      const regex = /([0-9]{9}[.])/;
+      const fileId = fileName.match(regex);
+
+      //parses into object with id being name:
+      let result = path.parse(fileId[0]);
+
+      db.knex('file_paths').insert({
+        file_id: result.name,
+        file_path: process.env.DB_STORAGE_PATH + '/' + fileName
+        
+      }).catch(function(error){
+        console.log(`
+        Error Caught in routes function savePath
+        ${error}
+        `)
+      })
+      //this info to make other function in /allBooks
     }
+
+    savePathToDB(req.file)
+    //savePathToDB()
     res.redirect("/upload");
   });
-  router.get('/allBooks', function(req,res){
 
-    res.render('pages/allBooks')
-  })
+  router.get("/allBooks", function (req, res) {
+    //wrtie function to get all books
+    //use file path
+    db.knex.select().table('file_paths').then(function(rows){
+      rows.forEach(row => console.log(row))
+    })
+    //return all books
+
+    res.render("pages/allBooks");
+  });
 
   app.use(router);
 };
