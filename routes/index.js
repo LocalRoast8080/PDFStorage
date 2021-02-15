@@ -49,13 +49,14 @@ let routes = (app) => {
       const fileName = fileObj.filename
       const regex = /([0-9]{9}[.])/;
       const fileId = fileName.match(regex);
-
+      console.log(fileName)
       //parses into object with id being name:
       let result = path.parse(fileId[0]);
 
       db.knex('file_paths').insert({
         file_id: result.name,
-        file_path: process.env.DB_STORAGE_PATH + '/' + fileName
+        file_path: process.env.DB_STORAGE_PATH + '/' + fileName,
+        book_name: fileName
         
       }).catch(function(error){
         console.log(`
@@ -70,16 +71,15 @@ let routes = (app) => {
     //savePathToDB()
     res.redirect("/upload");
   });
-
   router.get("/allBooks", function (req, res) {
     //wrtie function to get all books
     //use file path
     db.knex.select().table('file_paths').then(function(rows){
-      rows.forEach(row => console.log(row))
+      const books = rows;
+      res.render("pages/allBooks" , {Books: books});
     })
     //return all books
 
-    res.render("pages/allBooks");
   });
 
   app.use(router);

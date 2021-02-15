@@ -12,7 +12,11 @@
         <p class="lead">Jumbo helper text</p>
         <hr class="my-2">
         <p>More info</p>
-     
+        <% Books.forEach(books => { %>
+         <div class="list-group">
+             <a href="/books/:book_name" class="list-group-item list-group-item-action"><%= books.book_name %> </a>
+         </div>
+        <% }) %>
     </div>
 </body>
 <footer>
