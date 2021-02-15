@@ -81,7 +81,12 @@ let routes = (app) => {
     //return all books
 
   });
-
+  router.get('/books/:file_id', function(req,res){
+    //function to get book data by id
+    // download book option
+    
+    res.render("pages/book")
+  })
   app.use(router);
 };
 
