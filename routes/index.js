@@ -2,7 +2,7 @@ const express = require("express");
 const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
-require('dotenv').config()
+require("dotenv").config();
 const db = require("../db/index");
 
 const storage = multer.diskStorage({
@@ -44,49 +44,65 @@ let routes = (app) => {
     res.render("pages/varExample", { People: people, Bio: pageMeaning });
   });
   router.post("/upload", upload.single("pdf"), function (req, res) {
-
     function savePathToDB(fileObj) {
-      const fileName = fileObj.filename
+      const fileName = fileObj.filename;
       const regex = /([0-9]{9}[.])/;
       const fileId = fileName.match(regex);
-      console.log(fileName)
+      console.log(fileName);
       //parses into object with id being name:
       let result = path.parse(fileId[0]);
 
-      db.knex('file_paths').insert({
-        file_id: result.name,
-        file_path: process.env.DB_STORAGE_PATH + '/' + fileName,
-        book_name: fileName
-        
-      }).catch(function(error){
-        console.log(`
+      db.knex("file_paths")
+        .insert({
+          file_id: result.name,
+          file_path: process.env.DB_STORAGE_PATH + "/" + fileName,
+          book_name: fileName,
+        })
+        .catch(function (error) {
+          console.log(`
         Error Caught in routes function savePath
         ${error}
-        `)
-      })
+        `);
+        });
       //this info to make other function in /allBooks
     }
 
-    savePathToDB(req.file)
+    savePathToDB(req.file);
     //savePathToDB()
     res.redirect("/upload");
   });
   router.get("/allBooks", function (req, res) {
     //wrtie function to get all books
     //use file path
-    db.knex.select().table('file_paths').then(function(rows){
-      const books = rows;
-      res.render("pages/allBooks" , {Books: books});
-    })
+    db.knex
+      .select()
+      .table("file_paths")
+      .then(function (rows) {
+        const books = rows;
+        res.render("pages/allBooks", { Books: books });
+      });
     //return all books
-
   });
-  router.get('/books/:file_id', function(req,res){
-    //function to get book data by id
-    // download book option
-    
-    res.render("pages/book")
-  })
+  router.get("/book/:file_id", function (req, res) {
+    const bookId = req.params.file_id;
+    const test = { id: bookId };
+
+    res.render("pages/book", { ID: bookId });
+  });
+  router.post("/book/:file_id", function (req, res) {
+    const bookId = req.params.file_id;
+
+    console.log(req.body.download);
+    //write function to in act the download
+    //get book by id
+    db.knex("file_paths")
+      .where({ file_id: bookId })
+      .select("file_path")
+      .then(function (row) {
+        const filePath = "." + row[0].file_path;
+        res.download(filePath);
+      });
+  });
   app.use(router);
 };
 

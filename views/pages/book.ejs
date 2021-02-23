@@ -10,6 +10,10 @@
     <div class="jumbotron">
         <h1 class="display-3">Book Details and Download</h1>
         <p class="lead">Download Button</p>
+        <form method="post" action="/book/<%= ID %>">
+            <input type="hidden" id="bookId" name="download" value=true >
+            <button type="submit">Download!</button>
+         </form>
         <hr class="my-2">
         <p>More info</p>
         <i class="fas fa-h2    "> <%=  %> </i>
