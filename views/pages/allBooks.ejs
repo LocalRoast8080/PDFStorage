@@ -14,7 +14,7 @@
         <p>More info</p>
         <% Books.forEach(books => { %>
          <div class="list-group">
-             <a href="/book/<%= books.file_id %>" class="list-group-item list-group-item-action"><%= books.book_name %> </a>
+             <a href="/book/<%= books.name %>" class="list-group-item list-group-item-action"><%= books.name %> </a>
          </div>
         <% }) %>
     </div>
