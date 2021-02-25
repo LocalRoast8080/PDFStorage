@@ -11,10 +11,13 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@google-cloud/firestore": "^4.9.4",
+    "@google-cloud/storage": "^5.8.0",
     "body-parser": "^1.19.0",
     "dotenv": "^8.2.0",
     "ejs": "^3.1.5",
     "express": "^4.17.1",
+    "fs-extra": "^9.1.0",
     "image-thumbnail": "^1.0.13",
     "knex": "^0.21.17",
     "multer": "^1.4.2",

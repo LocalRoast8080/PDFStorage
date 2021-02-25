@@ -1,8 +1,10 @@
 const express = require("express");
 const multer = require("multer");
 const path = require("path");
-const fs = require("fs");
+const fs = require("fs-extra");
 require("dotenv").config();
+const { Storage } = require("@google-cloud/storage");
+const utility = require("../utilities")
 const db = require("../db/index");
 
 const storage = multer.diskStorage({
@@ -10,9 +12,9 @@ const storage = multer.diskStorage({
     cb(null, "uploads/");
   },
   filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    // const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
     let ogName = path.parse(file.originalname);
-    cb(null, ogName.name + "-" + uniqueSuffix + `.${file.fieldname}`);
+    cb(null, ogName.name + `.${file.fieldname}`);
   },
 });
 
@@ -44,44 +46,51 @@ let routes = (app) => {
     res.render("pages/varExample", { People: people, Bio: pageMeaning });
   });
   router.post("/upload", upload.single("pdf"), function (req, res) {
-    function savePathToDB(fileObj) {
-      const fileName = fileObj.filename;
-      const regex = /([0-9]{9}[.])/;
-      const fileId = fileName.match(regex);
-      console.log(fileName);
-      //parses into object with id being name:
-      let result = path.parse(fileId[0]);
+    // function savePathToDB(fileObj) {
+    //   const fileName = fileObj.filename;
+    //   const regex = /([0-9]{9}[.])/;
+    //   const fileId = fileName.match(regex);
+    //   console.log(fileName);
+    //   //parses into object with id being name:
+    //   let result = path.parse(fileId[0]);
 
-      db.knex("file_paths")
-        .insert({
-          file_id: result.name,
-          file_path: process.env.DB_STORAGE_PATH + "/" + fileName,
-          book_name: fileName,
-        })
-        .catch(function (error) {
-          console.log(`
-        Error Caught in routes function savePath
-        ${error}
-        `);
-        });
-      //this info to make other function in /allBooks
-    }
+    //   db.knex("file_paths")
+    //     .insert({
+    //       file_id: result.name,
+    //       file_path: process.env.DB_STORAGE_PATH + "/" + fileName,
+    //       book_name: fileName,
+    //     })
+    //     .catch(function (error) {
+    //       console.log(`
+    //     Error Caught in routes function savePath
+    //     ${error}
+    //     `);
+    //     });
+    //   //this info to make other function in /allBooks
+    // }
 
-    savePathToDB(req.file);
-    //savePathToDB()
+
+
+
+
+    db.uploadFile(req.file.path, req.file.filename)
+      .then(() => {
+        utility.deleteFile(`./uploads/${req.file.filename}`);
+      })
+      .catch((err) => console.log(err));
+
     res.redirect("/upload");
   });
   router.get("/allBooks", function (req, res) {
-    //wrtie function to get all books
-    //use file path
-    db.knex
-      .select()
-      .table("file_paths")
-      .then(function (rows) {
-        const books = rows;
-        res.render("pages/allBooks", { Books: books });
-      });
-    //return all books
+    // db.knex
+    //   .select()
+    //   .table("file_paths")
+    //   .then(function (rows) {
+    //     const books = rows;
+    //     res.render("pages/allBooks", { Books: books });
+    //   });
+
+
   });
   router.get("/book/:file_id", function (req, res) {
     const bookId = req.params.file_id;
