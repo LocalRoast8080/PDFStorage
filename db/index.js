@@ -1,10 +1,8 @@
-
 const { Storage } = require("@google-cloud/storage");
-const { remove } = require("fs-extra");
+const { remove, fstat } = require("fs-extra");
+const fs = require("fs-extra");
 
 const bucketName = process.env.BK_NAME;
-const filename = "./uploads/test.pdf";
-const destination = "test.pdf";
 
 const projectId = "aqueous-walker-304320";
 const keyFilename = "gcloudKey.json";
@@ -12,7 +10,6 @@ const storage = new Storage({ projectId, keyFilename });
 
 async function uploadFile(filePath, fileName) {
   const destination = fileName;
-  const bucketName = process.env.BK_NAME;
 
   await storage.bucket(bucketName).upload(filePath, {
     destination: destination,
@@ -24,11 +21,42 @@ async function uploadFile(filePath, fileName) {
   console.log(`${destination} uploaded to ${bucketName}.`);
 }
 
-async function getAllFiles() {
-  const bucketName = process.env.BK_NAME;
-  const [files] = await storage.bucket(bucketName).getFiles();
+async function uploadMultifiles(fileArray) {
+  for (const file of fileArray) {
 
-  return files
+    const destination = file.filename;
+    const filePath = file.path;
+
+    await storage.bucket(bucketName).upload(filePath, {
+      destination: destination,
+      metadata: {
+        cacheControl: "public, max-age=31536000",
+      },
+    });
+    console.log(`${destination} uploaded to ${bucketName}.`);
+  }
 }
 
-module.exports = {  uploadFile, getAllFiles };
+async function getAllFiles() {
+  const [files] = await storage.bucket(bucketName).getFiles();
+
+  return files;
+}
+
+async function downloadFile(fileName) {
+  const options = {
+    // The path to which the file should be downloaded, e.g. "./file.txt"
+    destination: `uploads/${fileName}`,
+  };
+
+  // Downloads the file
+  await storage
+    .bucket(bucketName)
+    .file(fileName)
+    .download(options)
+  
+
+  console.log(`gs://${bucketName}/${fileName} downloaded to /uploads`);
+}
+
+module.exports = { uploadFile, getAllFiles, downloadFile, uploadMultifiles };

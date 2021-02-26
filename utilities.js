@@ -12,5 +12,18 @@ function deleteFile(fileName) {
       });
   }
 
-module.exports = {deleteFile};
+function deleteFiles(fileArray){
+  fileArray.forEach(file => {
+    const filePath = `./uploads/${file.filename}`
+    fs.remove(filePath)
+    .then(() => {
+      console.log(`${filePath} deleted`);
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+  });
+}
+
+module.exports = {deleteFile, deleteFiles};
 

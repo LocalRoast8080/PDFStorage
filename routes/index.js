@@ -23,15 +23,50 @@ const upload = multer({ storage: storage });
 const router = express.Router();
 
 let routes = (app) => {
+
   router.get("/", function (req, res) {
     res.render("pages/index");
   });
+
   router.get("/upload", function (req, res) {
     res.render("pages/upload");
   });
+
+  router.post("/upload", upload.single("pdf"), function (req, res) {
+
+    db.uploadFile(req.file.path, req.file.filename)
+      .then(() => {
+        utility.deleteFile(`./uploads/${req.file.filename}`);
+      })
+      .catch((err) => console.log(err));
+
+    res.redirect("/upload");
+  });
+
+  router.get("/uploadMultiple", function(req,res){
+    res.render('pages/uploadMultiple')
+  })
+
+  router.post("/uploadMultiple", upload.array("pdf",10), function (req, res) {
+
+    // db.uploadFile(req.file.path, req.file.filename)
+    //   .then(() => {
+    //     utility.deleteFile(`./uploads/${req.file.filename}`);
+    //   })
+    //   .catch((err) => console.log(err));
+    db.uploadMultifiles(req.files).then(()=>{
+      utility.deleteFiles(req.files)
+    })
+    .catch((err) => console.log(err));
+
+
+    res.redirect("/uploadMultiple");
+  });
+
   router.get("/about", function (req, res) {
     res.render("pages/about");
   });
+
   router.get("/varExample", function (req, res) {
     var people = [
       { firstName: "Larry", lastName: "Cats", age: 4 },
@@ -45,52 +80,41 @@ let routes = (app) => {
 
     res.render("pages/varExample", { People: people, Bio: pageMeaning });
   });
-  router.post("/upload", upload.single("pdf"), function (req, res) {
-    db.uploadFile(req.file.path, req.file.filename)
-      .then(() => {
-        utility.deleteFile(`./uploads/${req.file.filename}`);
-      })
-      .catch((err) => console.log(err));
 
-    res.redirect("/upload");
-  });
   router.get("/allBooks", function (req, res) {
-    // db.knex
-    //   .select()
-    //   .table("file_paths")
-    //   .then(function (rows) {
-    //     const books = rows;
-    //     res.render("pages/allBooks", { Books: books });
-    //   });
     db.getAllFiles().then((files) => {
-        const books = files;
-        res.render("pages/allBooks", { Books: books });
-      files.forEach((file) => {
-        console.log(file.name);
-      });
+      const books = files;
+      res.render("pages/allBooks", { Books: books });
     });
-    // res.send("worked");
   });
-  router.get("/book/:file_id", function (req, res) {
-    const bookId = req.params.file_id;
-    const test = { id: bookId };
 
-    res.render("pages/book", { ID: bookId });
+  router.get("/book/:name", function (req, res) {
+
+    const bookName = req.params.name;
+    const test = { name: bookName };
+
+    res.render("pages/book", { Name: bookName });
   });
-  router.post("/book/:file_id", function (req, res) {
-    const bookId = req.params.file_id;
 
-    console.log(req.body.download);
-    //write function to in act the download
-    //get book by id
-    db.knex("file_paths")
-      .where({ file_id: bookId })
-      .select("file_path")
-      .then(function (row) {
-        const filePath = "." + row[0].file_path;
-        res.download(filePath);
+  router.post("/book/:name", function (req, res) {
+
+    const bookName = req.params.name;
+
+    db.downloadFile(bookName)
+      .then(() => {
+        res.download(`uploads/${bookName}`,function(err){
+          if(err){
+            console.log(err)
+          }else{
+            utility.deleteFile(`uploads/${bookName}`);
+          }
+        });
+      })
+      .catch((err) => {
+        console.log(err);
       });
   });
+
   app.use(router);
 };
 

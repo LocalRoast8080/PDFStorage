@@ -9,8 +9,8 @@
 <body class="container">
     <div class="jumbotron">
         <h1 class="display-3">Book Details and Download</h1>
-        <p class="lead">Download Button</p>
-        <form method="post" action="/book/<%= ID %>">
+        <p class="lead"> <%= Name %> </p>
+        <form method="post" action="/book/<%= Name %>">
             <input type="hidden" id="bookId" name="download" value=true >
             <button type="submit">Download!</button>
          </form>
