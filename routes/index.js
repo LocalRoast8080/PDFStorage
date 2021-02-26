@@ -47,13 +47,8 @@ let routes = (app) => {
     res.render('pages/uploadMultiple')
   })
 
-  router.post("/uploadMultiple", upload.array("pdf",10), function (req, res) {
+  router.post("/uploadMultiple", upload.array("pdf"), function (req, res) {
 
-    // db.uploadFile(req.file.path, req.file.filename)
-    //   .then(() => {
-    //     utility.deleteFile(`./uploads/${req.file.filename}`);
-    //   })
-    //   .catch((err) => console.log(err));
     db.uploadMultifiles(req.files).then(()=>{
       utility.deleteFiles(req.files)
     })

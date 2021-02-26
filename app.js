@@ -4,8 +4,6 @@ const fs = require("fs-extra");
 const bodyParser = require("body-parser");
 require("dotenv").config();
 const initRoutes = require("./routes/index.js");
-const { parse } = require("path");
-//const db = require("./db/index");
 const utilities = require("./utilities");
 const app = express();
 

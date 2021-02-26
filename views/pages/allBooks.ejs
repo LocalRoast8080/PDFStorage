@@ -13,9 +13,13 @@
         <hr class="my-2">
         <p>More info</p>
         <% Books.forEach(books => { %>
-         <div class="list-group">
-             <a href="/book/<%= books.name %>" class="list-group-item list-group-item-action"><%= books.name %> </a>
-         </div>
+            <div class="container">
+                <div class="row list-row-space">
+                    <a href="/book/<%= books.name %>" class="list-group-item list-group-item-action col-10"><%= books.name %> </a>
+                </div>
+                
+            </div>
+       
         <% }) %>
     </div>
 </body>
